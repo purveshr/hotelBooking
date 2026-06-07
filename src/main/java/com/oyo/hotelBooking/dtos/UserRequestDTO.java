@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class UserRequestDto {
+public class UserRequestDTO {
 
     @NotBlank(message = "First name is required")
     private String firstName;

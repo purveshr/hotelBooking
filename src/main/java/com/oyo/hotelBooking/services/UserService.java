@@ -1,6 +1,7 @@
 package com.oyo.hotelBooking.services;
 
-import com.oyo.hotelBooking.dtos.UserRequestDto;
+import com.oyo.hotelBooking.dtos.UserRequestDTO;
+import com.oyo.hotelBooking.models.Roles;
 import com.oyo.hotelBooking.models.User;
 import com.oyo.hotelBooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
 
-    public String registerUser(UserRequestDto userRequestDto){
+    public String registerUser(UserRequestDTO userRequestDto){
         if(userRepository.existsByEmailId(userRequestDto.getEmailId())){
             throw new RuntimeException("User with mail id already exists");
         }
@@ -33,7 +34,7 @@ public class UserService {
         user.setEmailId(userRequestDto.getEmailId());
         user.setFirstName(userRequestDto.getFirstName());
         user.setLastName(userRequestDto.getLastName());
-        user.setRole("USER");
+        user.setRole(Roles.CUSTOMER);
 
         // Encoding Password
         String encodedPassword = passwordEncoder.encode(userRequestDto.getPassword());
@@ -43,7 +44,7 @@ public class UserService {
         return "User registered successfully";
     }
 
-    public String getUserRole(String emailId){
+    public Roles getUserRole(String emailId){
         if(!userRepository.existsByEmailId(emailId)){
             throw new RuntimeException("User with mail id does not exists");
         }

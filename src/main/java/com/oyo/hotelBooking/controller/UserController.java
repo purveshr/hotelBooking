@@ -1,9 +1,10 @@
 
 package com.oyo.hotelBooking.controller;
 
-import com.oyo.hotelBooking.dtos.LoginRequestDto;
-import com.oyo.hotelBooking.dtos.LoginResponseDto;
-import com.oyo.hotelBooking.dtos.UserRequestDto;
+import com.oyo.hotelBooking.dtos.LoginRequestDTO;
+import com.oyo.hotelBooking.dtos.LoginResponseDTO;
+import com.oyo.hotelBooking.dtos.UserRequestDTO;
+import com.oyo.hotelBooking.models.Roles;
 import com.oyo.hotelBooking.security.JwtUtil;
 import com.oyo.hotelBooking.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,26 +44,26 @@ public class UserController {
 
     @Operation(summary = "Register User", description = "Creates a new user")
     @PostMapping("/signUp")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequestDTO userRequestDto) {
         String message = userService.registerUser(userRequestDto);
         return ResponseEntity.ok(message);
     }
 
     @Operation(summary = "Get User Role", description = "Fetch role by email ID")
     @GetMapping("/role")
-    public ResponseEntity<String> getRole(
+    public ResponseEntity<Roles> getRole(
             @RequestParam
             @NotBlank(message = "Email is required")
             @Email(message = "Invalid email format")
             String emailId) {
 
-        String message = userService.getUserRole(emailId);
+        Roles message = userService.getUserRole(emailId);
         return ResponseEntity.ok(message);
     }
 
     @Operation(summary = "Login User", description = "Authenticates user and returns JWT token")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -73,7 +74,7 @@ public class UserController {
 
         String token = jwtUtil.generateToken(request.getEmailId());
 
-        LoginResponseDto response = new LoginResponseDto();
+        LoginResponseDTO response = new LoginResponseDTO();
         response.setToken(token);
         response.setMessage("Login successful");
 

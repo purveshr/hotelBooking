@@ -1,5 +1,6 @@
 package com.oyo.hotelBooking.repository;
 
+import com.oyo.hotelBooking.models.Roles;
 import com.oyo.hotelBooking.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmailId(String emailId);
 
     @Query("SELECT u.role FROM User u WHERE u.emailId = :emailId")
-    String getRoleByEmailId(@Param("emailId") String emailId);
+    Roles getRoleByEmailId(@Param("emailId") String emailId);
 
 }

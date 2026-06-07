@@ -1,23 +1,34 @@
 package com.oyo.hotelBooking.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 
 @Entity
 @Data
+@Table(name = "users")
 public class User {
-    private String firstName;
-    private String lastName;
-    private String emailId;
-    private String role;
-    private String password;
-    private String number;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
+    @Column(nullable = false, unique = true)
+    private String emailId;
+
+    @Enumerated(EnumType.STRING)
+    private Roles role;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false, unique = true)
+    private String number;
+
 }
