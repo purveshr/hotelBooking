@@ -2,7 +2,7 @@ package com.oyo.hotelBooking.services;
 
 import com.oyo.hotelBooking.dtos.UserRequestDto;
 import com.oyo.hotelBooking.models.User;
-import com.oyo.hotelBooking.repositories.UserRepository;
+import com.oyo.hotelBooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,4 +50,6 @@ public class UserService {
 
         return userRepository.getRoleByEmailId(emailId);
     }
+
+
 }

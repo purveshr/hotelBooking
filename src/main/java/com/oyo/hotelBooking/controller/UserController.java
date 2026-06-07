@@ -1,48 +1,82 @@
+
 package com.oyo.hotelBooking.controller;
 
+import com.oyo.hotelBooking.dtos.LoginRequestDto;
+import com.oyo.hotelBooking.dtos.LoginResponseDto;
 import com.oyo.hotelBooking.dtos.UserRequestDto;
+import com.oyo.hotelBooking.security.JwtUtil;
 import com.oyo.hotelBooking.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
 @Tag(name = "User API", description = "Operations related to user management")
+@Validated
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+
+    public UserController(UserService userService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Operation(summary = "Welcome API", description = "Returns greeting message")
     @GetMapping("/welcome")
-    public String greet(){
+    public String greet() {
         return "Hello";
     }
 
     @Operation(summary = "Register User", description = "Creates a new user")
     @PostMapping("/signUp")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequestDto userRequestDto){
-
-        String massage = userService.registerUser(userRequestDto);
-        return ResponseEntity.ok(massage);
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        String message = userService.registerUser(userRequestDto);
+        return ResponseEntity.ok(message);
     }
 
     @Operation(summary = "Get User Role", description = "Fetch role by email ID")
     @GetMapping("/role")
-    public ResponseEntity<String> getRole
-            (
-                    @RequestParam
-                    @NotBlank(message = "Email is required")
-                    @Email(message = "Invalid email format")
-                    String emailId)
-    {
-        String massage = userService.getUserRole(emailId);
-        return ResponseEntity.ok(massage);
+    public ResponseEntity<String> getRole(
+            @RequestParam
+            @NotBlank(message = "Email is required")
+            @Email(message = "Invalid email format")
+            String emailId) {
+
+        String message = userService.getUserRole(emailId);
+        return ResponseEntity.ok(message);
+    }
+
+    @Operation(summary = "Login User", description = "Authenticates user and returns JWT token")
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmailId(),
+                        request.getPassword()
+                )
+        );
+
+        String token = jwtUtil.generateToken(request.getEmailId());
+
+        LoginResponseDto response = new LoginResponseDto();
+        response.setToken(token);
+        response.setMessage("Login successful");
+
+        return ResponseEntity.ok(response);
     }
 }
