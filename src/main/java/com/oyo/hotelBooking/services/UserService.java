@@ -1,8 +1,9 @@
 package com.oyo.hotelBooking.services;
 
+import com.oyo.hotelBooking.dtos.ChangeRoleDTO;
 import com.oyo.hotelBooking.dtos.UserRequestDTO;
-import com.oyo.hotelBooking.models.Roles;
-import com.oyo.hotelBooking.models.User;
+import com.oyo.hotelBooking.enums.Roles;
+import com.oyo.hotelBooking.entity.User;
 import com.oyo.hotelBooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,8 +49,22 @@ public class UserService {
         if(!userRepository.existsByEmailId(emailId)){
             throw new RuntimeException("User with mail id does not exists");
         }
-
         return userRepository.getRoleByEmailId(emailId);
+    }
+
+    public Roles changeRole(ChangeRoleDTO dto){
+        User user = userRepository.findByEmailId(dto.getEmailId())
+                .orElseThrow(() -> new RuntimeException("User with email does not exist"));
+        // Prevent redundant update
+        if (user.getRole() == dto.getRole()) {
+            throw new IllegalArgumentException("User already has this role");
+        }
+
+        user.setRole(dto.getRole());
+        userRepository.save(user);
+        return user.getRole(); // or return full User / DTO
+
+
     }
 
 

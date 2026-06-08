@@ -39,7 +39,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Public APIs
+                        // Public APIs
                         .requestMatchers(
                                 "/user/signUp",
                                 "/user/login",
@@ -47,8 +47,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-
-                        // ✅ Protected APIs
+                        .requestMatchers(
+                                "/user/changeUserRole").hasRole("ADMIN")
+                        // Protected APIs
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable());

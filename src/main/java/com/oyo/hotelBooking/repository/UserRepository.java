@@ -1,7 +1,7 @@
 package com.oyo.hotelBooking.repository;
 
-import com.oyo.hotelBooking.models.Roles;
-import com.oyo.hotelBooking.models.User;
+import com.oyo.hotelBooking.enums.Roles;
+import com.oyo.hotelBooking.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

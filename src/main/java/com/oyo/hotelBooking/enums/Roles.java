@@ -1,4 +1,4 @@
-package com.oyo.hotelBooking.models;
+package com.oyo.hotelBooking.enums;
 
 public enum Roles {
     ADMIN,

@@ -1,10 +1,11 @@
 
 package com.oyo.hotelBooking.controller;
 
+import com.oyo.hotelBooking.dtos.ChangeRoleDTO;
 import com.oyo.hotelBooking.dtos.LoginRequestDTO;
 import com.oyo.hotelBooking.dtos.LoginResponseDTO;
 import com.oyo.hotelBooking.dtos.UserRequestDTO;
-import com.oyo.hotelBooking.models.Roles;
+import com.oyo.hotelBooking.enums.Roles;
 import com.oyo.hotelBooking.security.JwtUtil;
 import com.oyo.hotelBooking.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
@@ -80,4 +82,14 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    @Operation(summary = "Change user role", description = "Requires ADMIN role to change users role, roles can be changed toHOTEL_OWNER, CUSTOMER, ADMIN")
+    @PutMapping("/changeUserRole")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> changeUserRole(@Valid @RequestBody ChangeRoleDTO dto) {
+        Roles updatedRole = userService.changeRole(dto);
+        return ResponseEntity.ok("User role updated to: " + updatedRole);
+    }
+
 }
