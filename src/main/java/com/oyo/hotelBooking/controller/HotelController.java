@@ -28,6 +28,13 @@ public class HotelController {
         return ResponseEntity.status(HttpStatus.CREATED).body(hotelResponseDTO);
     }
 
+    @Operation(summary = "Create multiple hotels", description = "Creates multiple hotels in a single request")
+    @PostMapping("/batch")
+    public ResponseEntity<List<HotelResponseDTO>> createMultipleHotels(@Valid @RequestBody List<HotelRequestDTO> hotelRequestDTOs) {
+        List<HotelResponseDTO> hotelResponseDTOs = hotelService.createMultipleHotels(hotelRequestDTOs);
+        return ResponseEntity.status(HttpStatus.CREATED).body(hotelResponseDTOs);
+    }
+
     @Operation(summary = "Get all hotels", description = "Retrieves a list of all hotels")
     @GetMapping
     public ResponseEntity<List<HotelResponseDTO>> getAllHotels() {
@@ -57,4 +64,3 @@ public class HotelController {
         return ResponseEntity.ok(message);
     }
 }
-

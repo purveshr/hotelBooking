@@ -79,6 +79,28 @@ public class HotelService {
         return "Hotel with id " + id + " deleted successfully";
     }
 
+    public List<HotelResponseDTO> createMultipleHotels(List<HotelRequestDTO> hotelRequestDTOs) {
+        List<Hotel> hotels = hotelRequestDTOs.stream().map(hotelRequestDTO -> {
+            User owner = userRepository.findById(hotelRequestDTO.getOwnerId())
+                    .orElseThrow(() -> new RuntimeException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
+
+            return Hotel.builder()
+                    .name(hotelRequestDTO.getName())
+                    .address(hotelRequestDTO.getAddress())
+                    .city(hotelRequestDTO.getCity())
+                    .state(hotelRequestDTO.getState())
+                    .country(hotelRequestDTO.getCountry())
+                    .description(hotelRequestDTO.getDescription())
+                    .owner(owner)
+                    .build();
+        }).collect(Collectors.toList());
+
+        List<Hotel> savedHotels = hotelRepository.saveAll(hotels);
+        return savedHotels.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     private HotelResponseDTO convertToResponseDTO(Hotel hotel) {
         HotelResponseDTO responseDTO = new HotelResponseDTO();
         responseDTO.setId(hotel.getId());
@@ -94,4 +116,3 @@ public class HotelService {
         return responseDTO;
     }
 }
-
