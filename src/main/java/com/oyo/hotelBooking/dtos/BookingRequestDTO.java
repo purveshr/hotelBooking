@@ -1,8 +1,6 @@
 package com.oyo.hotelBooking.dtos;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,15 +13,19 @@ public class BookingRequestDTO {
     private LocalDate checkInDate;
 
     @NotNull(message = "Check-out date is required")
+    @Future(message = "Check-out date must be in the future")
     private LocalDate checkOutDate;
 
     @NotNull(message = "Total guests is required")
     @Min(value = 1, message = "At least 1 guest is required")
+    @Max(value = 20, message = "Total guests must not exceed 20")
     private Integer totalGuests;
 
     @NotNull(message = "Customer id is required")
+    @Positive(message = "Customer id must be a positive number")
     private Integer customerId;
 
     @NotNull(message = "Room id is required")
+    @Positive(message = "Room id must be a positive number")
     private Integer roomId;
 }

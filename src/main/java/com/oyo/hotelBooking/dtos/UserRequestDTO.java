@@ -8,13 +8,16 @@ import lombok.Data;
 public class UserRequestDTO {
 
     @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
 
     @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     private String lastName;
 
     @Email(message = "Email format is invalid")
     @NotBlank(message = "Email is required")
+    @Size(max = 100, message = "Email must not exceed 100 characters")
     private String emailId;
 
     @NotBlank(message = "Password is required")

@@ -8,9 +8,10 @@ import lombok.Data;
 
 @Data
 public class ChangeRoleDTO {
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email format is invalid")
     private String emailId;
-    @NotNull
+
+    @NotNull(message = "Role is required")
     private Roles role;
 }
