@@ -8,10 +8,12 @@ import com.oyo.hotelBooking.repository.HotelRepository;
 import com.oyo.hotelBooking.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class RoomService {
 

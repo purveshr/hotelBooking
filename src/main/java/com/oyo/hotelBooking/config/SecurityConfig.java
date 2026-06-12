@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,6 +48,13 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        // Rooms: list by hotel is public
+                        .requestMatchers("/rooms/hotel/**").permitAll()
+                        // Create room: only HOTEL_OWNER
+                        .requestMatchers(HttpMethod.POST, "/rooms").hasRole("HOTEL_OWNER")
+                        // Update/Delete: ADMIN or HOTEL_OWNER (ownership enforced in service)
+                        .requestMatchers(HttpMethod.PUT, "/rooms/**").hasAnyRole("ADMIN", "HOTEL_OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/rooms/**").hasAnyRole("ADMIN", "HOTEL_OWNER")
                         .requestMatchers(
                                 "/user/changeUserRole").hasRole("ADMIN")
                         // Protected APIs

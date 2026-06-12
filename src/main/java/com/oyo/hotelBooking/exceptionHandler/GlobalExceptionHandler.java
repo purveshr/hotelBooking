@@ -1,4 +1,4 @@
-package com.oyo.hotelBooking.execptionHandler;
+package com.oyo.hotelBooking.exceptionHandler;
 
 
 import org.springframework.http.HttpStatus;

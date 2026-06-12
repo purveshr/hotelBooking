@@ -50,7 +50,7 @@ public class UserController {
         String message = userService.registerUser(userRequestDto);
         return ResponseEntity.ok(message);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get User Role", description = "Fetch role by email ID")
     @GetMapping("/role")
     public ResponseEntity<Roles> getRole(

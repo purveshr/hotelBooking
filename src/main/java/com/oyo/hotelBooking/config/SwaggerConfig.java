@@ -14,9 +14,9 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("BookMyShow API")
+                        .title("Hotel Booking AP")
                         .version("1.0")
-                        .description("API documentation for BookMyShow"))
+                        .description("API documentation for Hotel Booking System"))
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new io.swagger.v3.oas.models.Components()
                         .addSecuritySchemes("Bearer Authentication",
