@@ -5,15 +5,15 @@ import com.oyo.hotelBooking.enums.PaymentStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class BookingResponseDTO {
 
     private Integer id;
     private String bookingCode;
-    private LocalDate checkInDate;
-    private LocalDate checkOutDate;
+    private LocalDateTime checkInDate;
+    private LocalDateTime checkOutDate;
     private Integer totalGuests;
     private BigDecimal totalAmount;
 

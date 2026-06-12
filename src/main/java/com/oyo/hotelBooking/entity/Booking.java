@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
@@ -25,10 +25,10 @@ public class Booking {
     private String bookingCode;
 
     @Column(nullable = false)
-    private LocalDate checkInDate;
+    private LocalDateTime checkInDate;
 
     @Column(nullable = false)
-    private LocalDate checkOutDate;
+    private LocalDateTime checkOutDate;
 
     @Column(nullable = false)
     private Integer totalGuests;

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalTime;
 
 @Service
 @Transactional
@@ -23,9 +24,12 @@ public class HotelService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private com.oyo.hotelBooking.security.CurrentUserService currentUserService;
+
     public HotelResponseDTO createHotel(HotelRequestDTO hotelRequestDTO) {
         User owner = userRepository.findById(hotelRequestDTO.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
 
         Hotel hotel = Hotel.builder()
                 .name(hotelRequestDTO.getName())
@@ -34,6 +38,8 @@ public class HotelService {
                 .state(hotelRequestDTO.getState())
                 .country(hotelRequestDTO.getCountry())
                 .description(hotelRequestDTO.getDescription())
+                .checkInTime(hotelRequestDTO.getCheckInTime() != null ? hotelRequestDTO.getCheckInTime() : LocalTime.of(15,0))
+                .checkOutTime(hotelRequestDTO.getCheckOutTime() != null ? hotelRequestDTO.getCheckOutTime() : LocalTime.of(11,0))
                 .owner(owner)
                 .build();
 
@@ -50,16 +56,22 @@ public class HotelService {
 
     public HotelResponseDTO getHotelById(Integer id) {
         Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hotel with id " + id + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Hotel with id " + id + " not found"));
         return convertToResponseDTO(hotel);
     }
 
     public HotelResponseDTO updateHotel(Integer id, HotelRequestDTO hotelRequestDTO) {
         Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hotel with id " + id + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Hotel with id " + id + " not found"));
+
+        // Authorization: only hotel owner or admin can update the hotel
+        com.oyo.hotelBooking.entity.User current = currentUserService.getCurrentUser();
+        if (current.getRole() != com.oyo.hotelBooking.enums.Roles.ADMIN && !hotel.getOwner().getId().equals(current.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("You are not allowed to update this hotel");
+        }
 
         User owner = userRepository.findById(hotelRequestDTO.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
 
         hotel.setName(hotelRequestDTO.getName());
         hotel.setAddress(hotelRequestDTO.getAddress());
@@ -67,6 +79,8 @@ public class HotelService {
         hotel.setState(hotelRequestDTO.getState());
         hotel.setCountry(hotelRequestDTO.getCountry());
         hotel.setDescription(hotelRequestDTO.getDescription());
+        hotel.setCheckInTime(hotelRequestDTO.getCheckInTime() != null ? hotelRequestDTO.getCheckInTime() : LocalTime.of(15,0));
+        hotel.setCheckOutTime(hotelRequestDTO.getCheckOutTime() != null ? hotelRequestDTO.getCheckOutTime() : LocalTime.of(11,0));
         hotel.setOwner(owner);
 
         Hotel updatedHotel = hotelRepository.save(hotel);
@@ -75,7 +89,7 @@ public class HotelService {
 
     public String deleteHotel(Integer id) {
         Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hotel with id " + id + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Hotel with id " + id + " not found"));
 
         hotelRepository.delete(hotel);
         return "Hotel with id " + id + " deleted successfully";
@@ -84,7 +98,7 @@ public class HotelService {
     public List<HotelResponseDTO> createMultipleHotels(List<HotelRequestDTO> hotelRequestDTOs) {
         List<Hotel> hotels = hotelRequestDTOs.stream().map(hotelRequestDTO -> {
             User owner = userRepository.findById(hotelRequestDTO.getOwnerId())
-                    .orElseThrow(() -> new RuntimeException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
+                    .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Owner with id " + hotelRequestDTO.getOwnerId() + " not found"));
 
             return Hotel.builder()
                     .name(hotelRequestDTO.getName())
@@ -93,6 +107,8 @@ public class HotelService {
                     .state(hotelRequestDTO.getState())
                     .country(hotelRequestDTO.getCountry())
                     .description(hotelRequestDTO.getDescription())
+                    .checkInTime(hotelRequestDTO.getCheckInTime() != null ? hotelRequestDTO.getCheckInTime() : LocalTime.of(15,0))
+                    .checkOutTime(hotelRequestDTO.getCheckOutTime() != null ? hotelRequestDTO.getCheckOutTime() : LocalTime.of(11,0))
                     .owner(owner)
                     .build();
         }).collect(Collectors.toList());
@@ -115,6 +131,8 @@ public class HotelService {
         responseDTO.setStatus(hotel.getStatus());
         responseDTO.setOwnerId(hotel.getOwner().getId());
         responseDTO.setOwnerName(hotel.getOwner().getFirstName() + " " + hotel.getOwner().getLastName());
+        responseDTO.setCheckInTime(hotel.getCheckInTime());
+        responseDTO.setCheckOutTime(hotel.getCheckOutTime());
         return responseDTO;
     }
 }

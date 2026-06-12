@@ -51,6 +51,7 @@ public class HotelController {
 
     @Operation(summary = "Update hotel", description = "Updates an existing hotel with the provided details")
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('HOTEL_OWNER','ADMIN')")
     public ResponseEntity<HotelResponseDTO> updateHotel(@PathVariable Integer id,
                                                         @Valid @RequestBody HotelRequestDTO hotelRequestDTO) {
         HotelResponseDTO hotelResponseDTO = hotelService.updateHotel(id, hotelRequestDTO);

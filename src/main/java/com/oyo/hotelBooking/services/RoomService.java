@@ -25,7 +25,7 @@ public class RoomService {
 
     public RoomResponseDTO addRoom(RoomRequestDTO roomRequestDTO) {
         Hotel hotel = hotelRepository.findById(roomRequestDTO.getHotelId())
-                .orElseThrow(() -> new RuntimeException("Hotel with id " + roomRequestDTO.getHotelId() + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Hotel with id " + roomRequestDTO.getHotelId() + " not found"));
 
         Room room = Room.builder()
                 .roomNumber(roomRequestDTO.getRoomNumber())
@@ -42,7 +42,7 @@ public class RoomService {
 
     public List<RoomResponseDTO> listRoomsByHotel(Integer hotelId) {
         hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new RuntimeException("Hotel with id " + hotelId + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Hotel with id " + hotelId + " not found"));
 
         List<Room> rooms = roomRepository.findByHotelId(hotelId);
         return rooms.stream()
@@ -52,10 +52,10 @@ public class RoomService {
 
     public RoomResponseDTO updateRoom(Integer id, RoomRequestDTO roomRequestDTO) {
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Room with id " + id + " not found"));
 
         Hotel hotel = hotelRepository.findById(roomRequestDTO.getHotelId())
-                .orElseThrow(() -> new RuntimeException("Hotel with id " + roomRequestDTO.getHotelId() + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Hotel with id " + roomRequestDTO.getHotelId() + " not found"));
 
         room.setRoomNumber(roomRequestDTO.getRoomNumber());
         room.setRoomType(roomRequestDTO.getRoomType());
@@ -70,7 +70,7 @@ public class RoomService {
 
     public String deleteRoom(Integer id) {
         Room room = roomRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Room with id " + id + " not found"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("Room with id " + id + " not found"));
 
         roomRepository.delete(room);
         return "Room with id " + id + " deleted successfully";

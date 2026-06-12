@@ -56,7 +56,7 @@ public class UserService {
 
     public Roles changeRole(ChangeRoleDTO dto){
         User user = userRepository.findByEmailId(dto.getEmailId())
-                .orElseThrow(() -> new RuntimeException("User with email does not exist"));
+                .orElseThrow(() -> new com.oyo.hotelBooking.exceptionHandler.ResourceNotFoundException("User with email does not exist"));
         // Prevent redundant update
         if (user.getRole() == dto.getRole()) {
             throw new IllegalArgumentException("User already has this role");

@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "hotels")
@@ -43,6 +44,14 @@ public class Hotel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private HotelStatus status = HotelStatus.ACTIVE;
+
+    @Builder.Default
+    @Column(name = "check_in_time", nullable = false)
+    private LocalTime checkInTime = LocalTime.of(15, 0);
+
+    @Builder.Default
+    @Column(name = "check_out_time", nullable = false)
+    private LocalTime checkOutTime = LocalTime.of(11, 0);
 
 }
 

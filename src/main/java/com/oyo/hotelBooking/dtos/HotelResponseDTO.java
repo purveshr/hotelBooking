@@ -2,6 +2,7 @@ package com.oyo.hotelBooking.dtos;
 
 import com.oyo.hotelBooking.enums.HotelStatus;
 import lombok.Data;
+import java.time.LocalTime;
 
 @Data
 public class HotelResponseDTO {
@@ -17,4 +18,6 @@ public class HotelResponseDTO {
 
     private Integer ownerId;
     private String ownerName;
+    private LocalTime checkInTime;
+    private LocalTime checkOutTime;
 }

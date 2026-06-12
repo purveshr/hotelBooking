@@ -2,10 +2,12 @@ package com.oyo.hotelBooking.dtos;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import com.oyo.hotelBooking.validation.ValidBookingDates;
 
 import java.time.LocalDate;
 
 @Data
+@ValidBookingDates
 public class BookingRequestDTO {
 
     @NotNull(message = "Check-in date is required")

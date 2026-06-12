@@ -3,8 +3,11 @@ package com.oyo.hotelBooking.dtos;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import java.time.LocalTime;
+import com.oyo.hotelBooking.validation.ValidHotelTimes;
 
 @Data
+@ValidHotelTimes
 public class HotelRequestDTO {
 
     @NotBlank(message = "Hotel name is required")
@@ -32,4 +35,8 @@ public class HotelRequestDTO {
     @NotNull(message = "Owner id is required")
     @Positive(message = "Owner id must be a positive number")
     private Integer ownerId;
+
+    // Optional: if not provided, defaults will be used (15:00 check-in, 11:00 check-out)
+    private LocalTime checkInTime;
+    private LocalTime checkOutTime;
 }
