@@ -7,9 +7,9 @@ import com.oyo.hotelBooking.services.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +19,15 @@ import java.util.List;
 @Tag(name = "Booking API", description = "Operations related to booking management")
 public class BookingController {
 
-    @Autowired
-    private BookingService bookingService;
+    private final BookingService bookingService;
+
+    public BookingController(BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
 
     @Operation(summary = "Create a booking", description = "Creates a booking for a room")
     @PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingRequestDTO dto) {
         BookingResponseDTO response = bookingService.createBooking(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -44,9 +47,9 @@ public class BookingController {
 
     @Operation(summary = "Update booking status", description = "Update status of an existing booking")
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('CUSTOMER','HOTEL_OWNER','ADMIN')")
     public ResponseEntity<BookingResponseDTO> updateStatus(@PathVariable Integer id,
                                                            @Valid @RequestBody BookingStatusUpdateDTO dto) {
         return ResponseEntity.ok(bookingService.updateBookingStatus(id, dto));
     }
 }
-

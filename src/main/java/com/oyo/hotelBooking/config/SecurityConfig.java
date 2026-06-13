@@ -4,10 +4,10 @@ package com.oyo.hotelBooking.config;
 import com.oyo.hotelBooking.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,13 +25,11 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
-    // ✅ Password encoder (already correct)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Main security config
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -40,7 +38,6 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Public APIs
                         .requestMatchers(
                                 "/user/signUp",
                                 "/user/login",
@@ -48,27 +45,33 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        // Rooms: list by hotel is public
+
+                        // public read APIs
+                        .requestMatchers(HttpMethod.GET, "/hotels/**").permitAll()
                         .requestMatchers("/rooms/hotel/**").permitAll()
-                        // Create room: only HOTEL_OWNER
+
+                        // hotels
+                        .requestMatchers(HttpMethod.POST, "/hotels").hasAnyRole("ADMIN", "HOTEL_OWNER")
+                        .requestMatchers(HttpMethod.POST, "/hotels/batch").hasAnyRole("ADMIN", "HOTEL_OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/hotels/**").hasAnyRole("ADMIN", "HOTEL_OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/hotels/**").hasAnyRole("ADMIN", "HOTEL_OWNER")
+
+                        // rooms
                         .requestMatchers(HttpMethod.POST, "/rooms").hasRole("HOTEL_OWNER")
-                        // Update/Delete: ADMIN or HOTEL_OWNER (ownership enforced in service)
                         .requestMatchers(HttpMethod.PUT, "/rooms/**").hasAnyRole("ADMIN", "HOTEL_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/rooms/**").hasAnyRole("ADMIN", "HOTEL_OWNER")
-                        .requestMatchers(
-                                "/user/changeUserRole").hasRole("ADMIN")
-                        // Protected APIs
+
+                        // users
+                        .requestMatchers("/user/changeUserRole").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable());
 
-        // ✅ Add JWT filter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
-    // ✅ Required for authenticationManager.authenticate()
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

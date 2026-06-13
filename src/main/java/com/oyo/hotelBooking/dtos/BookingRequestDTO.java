@@ -1,8 +1,9 @@
+
 package com.oyo.hotelBooking.dtos;
 
+import com.oyo.hotelBooking.validation.ValidBookingDates;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import com.oyo.hotelBooking.validation.ValidBookingDates;
 
 import java.time.LocalDate;
 
@@ -22,10 +23,6 @@ public class BookingRequestDTO {
     @Min(value = 1, message = "At least 1 guest is required")
     @Max(value = 20, message = "Total guests must not exceed 20")
     private Integer totalGuests;
-
-    @NotNull(message = "Customer id is required")
-    @Positive(message = "Customer id must be a positive number")
-    private Integer customerId;
 
     @NotNull(message = "Room id is required")
     @Positive(message = "Room id must be a positive number")
